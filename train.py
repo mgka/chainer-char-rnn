@@ -1,4 +1,5 @@
 #%%
+# -*- coding: utf-8 -*-
 import time
 import math
 import sys
@@ -6,6 +7,7 @@ import argparse
 import cPickle as pickle
 import copy
 import os
+import codecs
 
 import numpy as np
 from chainer import cuda, Variable, FunctionSet, optimizers
@@ -16,7 +18,7 @@ from CharRNN import CharRNN, make_initial_state
 def load_data(args):
     vocab = {}
     print ('%s/input.txt'% args.data_dir)
-    words = open('%s/input.txt' % args.data_dir, 'rb').read()
+    words = codecs.open('%s/input.txt' % args.data_dir, 'r', 'utf-8').read()
     words = list(words)
     dataset = np.ndarray((len(words),), dtype=np.int32)
     for i, word in enumerate(words):
@@ -48,6 +50,8 @@ args = parser.parse_args()
 
 if not os.path.exists(args.checkpoint_dir):
     os.mkdir(args.checkpoint_dir)
+
+loss_file = open('%s/loss.txt' % args.checkpoint_dir, 'w')
 
 n_epochs    = args.epochs
 n_units     = args.rnn_size
@@ -100,6 +104,7 @@ for i in xrange(jump * n_epochs):
     if (i + 1) % bprop_len == 0:  # Run truncated BPTT
         now = time.time()
         print '{}/{}, train_loss = {}, time = {:.2f}'.format((i+1)/bprop_len, jump, accum_loss.data / bprop_len, now-cur_at)
+        loss_file.write('{}\n'.format(accum_loss.data / bprop_len))
         cur_at = now
 
         optimizer.zero_grads()
