@@ -50,7 +50,7 @@ prev_char = np.array([0])
 if args.gpu >= 0:
     prev_char = cuda.to_gpu(prev_char)
 if len(args.primetext) > 0:
-    for i in args.primetext:
+    for i in unicode(args.primetext, 'utf-8'):
         sys.stdout.write(i)
         prev_char = np.ones((1,)).astype(np.int32) * vocab[i]
         if args.gpu >= 0:
