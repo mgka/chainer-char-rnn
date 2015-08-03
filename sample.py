@@ -9,6 +9,7 @@ import numpy as np
 from chainer import cuda, Variable, FunctionSet
 import chainer.functions as F
 from CharRNN import CharRNN, make_initial_state
+import codecs
 
 #%% arguments
 parser = argparse.ArgumentParser()
@@ -49,6 +50,9 @@ if args.gpu >= 0:
 prev_char = np.array([0])
 if args.gpu >= 0:
     prev_char = cuda.to_gpu(prev_char)
+
+sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
+
 if len(args.primetext) > 0:
     for i in unicode(args.primetext, 'utf-8'):
         sys.stdout.write(i)
