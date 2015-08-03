@@ -45,6 +45,7 @@ parser.add_argument('--batchsize',                  type=int,   default=50)
 parser.add_argument('--epochs',                     type=int,   default=50)
 parser.add_argument('--grad_clip',                  type=int,   default=5)
 parser.add_argument('--init_from',                  type=str,   default='')
+parser.add_argument('--enable_checkpoint',          type=bool,  default=True)
 
 args = parser.parse_args()
 
@@ -118,9 +119,10 @@ for i in xrange(jump * n_epochs):
         optimizer.clip_grads(grad_clip)
         optimizer.update()
 
-    if (i + 1) % 10000 == 0:
-        fn = ('%s/charrnn_epoch_%.2f.chainermodel' % (args.checkpoint_dir, float(i)/jump))
-        pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
+        if args.enable_checkpoint:
+            if (i + 1) % 10000 == 0:
+                fn = ('%s/charrnn_epoch_%.2f.chainermodel' % (args.checkpoint_dir, float(i)/jump))
+                pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
 
     if (i + 1) % jump == 0:
         epoch += 1
@@ -130,3 +132,6 @@ for i in xrange(jump * n_epochs):
             print 'decayed learning rate by a factor {} to {}'.format(args.learning_rate_decay, optimizer.lr)
 
     sys.stdout.flush()
+
+fn = ('%s/charrnn_final.chainermodel' % args.checkpoint_dir)
+pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
