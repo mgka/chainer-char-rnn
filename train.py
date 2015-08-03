@@ -119,10 +119,10 @@ for i in xrange(jump * n_epochs):
         optimizer.clip_grads(grad_clip)
         optimizer.update()
 
-        if args.enable_checkpoint:
-            if (i + 1) % 10000 == 0:
-                fn = ('%s/charrnn_epoch_%.2f.chainermodel' % (args.checkpoint_dir, float(i)/jump))
-                pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
+    if args.enable_checkpoint:
+        if (i + 1) % 10000 == 0:
+            fn = ('%s/charrnn_epoch_%.2f.chainermodel' % (args.checkpoint_dir, float(i)/jump))
+            pickle.dump(copy.deepcopy(model).to_cpu(), open(fn, 'wb'))
 
     if (i + 1) % jump == 0:
         epoch += 1
